@@ -5,7 +5,7 @@ import java.util.Queue;
 import java.util.Stack;
 
 /*
- *                                          二叉树说明
+ *                                          二叉树
  * -------------------------------------------------------------------------------------------------
  * 定义： 二叉树是每个结点最多有两个子树的树结构。
  *
@@ -35,30 +35,16 @@ import java.util.Stack;
 
 /**
  * 二叉树。
- * 实现二叉树的构建、遍历。
+ * 实现二叉树的构建。
  *
  */
-public class BinaryTree<T> {
-    private Node<T> root = null;
-
-    /**
-     * 设置根结点。
-     */
-    public void setRoot(Node<T> root) {
-        this.root = root;
-    }
-
-    /**
-     * 获取根结点。
-     */
-    public Node<T> getRoot() {
-        return this.root;
-    }
+public class BinaryTree<T> extends Tree<T> {
 
     /**
      * 以中序和后序构建二叉树。
      * @param inorder 以中序遍历顺序存储的数组。
      * @param postorder 以后序遍历顺序存储的数组。
+     * @throws Exception 如果同一颗二叉树的中序和后序数组长度不等，或两个数组中的元素不一致，则抛出异常。
      */
     @SuppressWarnings("unchecked")
     public void buildBinaryTreeInPostOrder(T[] inorder, T[] postorder) throws Exception {
@@ -76,6 +62,9 @@ public class BinaryTree<T> {
         /* 备注： 此处代码待优化，因为buildFind函数和寻找当前结点左右子树根结点有重合部分。 */
         for (int i = nodes.length - 1; i >= 0; i--) { // 更新每个结点的左右孩子。
             int index = buildFind(inorder, postorder[i]);
+            if (index == -1) {
+                throw new Exception("The array elements do not match.");
+            }
             in_visited[index] = true;
             boolean break_flag = false;
             int right_index = -1; // 对左右孩子寻找顺序有要求，先找右子树根结点。
@@ -121,13 +110,14 @@ public class BinaryTree<T> {
                 nodes[i].left = nodes[left_index];
             }
         }
-        this.root = nodes[nodes.length - 1];
+        this.setRoot(nodes[nodes.length - 1]);
     }
 
     /**
      * 以前序和中序构建二叉树。
      * @param preorder 以前序遍历顺序存储的数组。
      * @param inorder 以中序遍历顺序存储的数组。
+     * @throws Exception 如果同一颗二叉树的中序和后序数组长度不等，或两个数组中的元素不一致，则抛出异常。
      */
     @SuppressWarnings("unchecked")
     public void buildBinaryTreePreInOrder(T[] preorder, T[] inorder) throws Exception {
@@ -193,7 +183,7 @@ public class BinaryTree<T> {
                 nodes[i].right = nodes[right_index];
             }
         }
-        this.root = nodes[0];
+        this.setRoot(nodes[0]);
     }
 
     /**
@@ -277,136 +267,5 @@ public class BinaryTree<T> {
             }
         }
         return -1;
-    }
-
-    /**
-     * 广度遍历(Breadth First Search)。
-     */
-    public void breadthTraversal() {
-        if (this.root == null) {
-            return;
-        }
-        /* 采用队列数据结构进行实现。 */
-        Queue<Node<T>> nodes = new LinkedList<>();
-        Node<T> cur = this.root;
-        nodes.add(cur);
-        while (!nodes.isEmpty()) {
-            cur = nodes.remove();
-            System.out.println(cur.val);
-            if (cur.left != null) {
-                nodes.add(cur.left);
-            }
-            if (cur.right != null) {
-                nodes.add(cur.right);
-            }
-        }
-    }
-
-    /**
-     * 非递归后序遍历：left ---> right ---> root
-     */
-    public void postorderTraversal() {
-        System.out.print("postorder: ");
-        if (this.root == null) {
-            return;
-        }
-        /* 实现非递归后序遍历的关键是：标记已访问过的左右子树，防止重复访问。 */
-        Node<T> cur = this.root;
-        Node<T> last_visit_right = null;
-        Stack<Node<T>> nodes = new Stack<>();
-        while (cur != null || !nodes.isEmpty()) {
-            while (cur != null ) {
-                nodes.push(cur);
-                cur = cur.left;
-            }
-            cur = nodes.peek();
-            if (cur.right == null || cur.right == last_visit_right) {
-                System.out.print(cur.val + " ");
-                last_visit_right = cur; // 存储已访问过的右子树根结点(标记已访问右子树)。
-                nodes.pop();
-                // 此时，被访问结点的左子树均已被访问，因此需要将cur置为null,
-                // 防止再次访问cur的左子树(标记已访问左子树)。
-                cur = null;
-            } else {
-                cur = cur.right;
-            }
-        }
-        System.out.println();
-    }
-
-    /**
-     * 非递归中序遍历：left ---> root ---> right
-     */
-    public void inorderTraversal() {
-        System.out.print("inorder: ");
-        if (this.root == null) {
-            return;
-        }
-        Node<T> cur = this.root;
-        Stack<Node<T>> nodes = new Stack<>();
-        while (cur != null || !nodes.isEmpty()) {
-            while (cur != null) {
-                nodes.push(cur);
-                cur = cur.left;
-            }
-            cur = nodes.pop();
-            System.out.print(cur.val + " ");
-            cur = cur.right;
-        }
-        System.out.println();
-    }
-
-    /**
-     * 非递归前序遍历：root ---> left ---> right。
-     */
-    public void preorderTraversal() {
-        System.out.print("preorder: ");
-        if (this.root == null) {
-            return;
-        }
-        Node<T> cur = this.root;
-        Stack<Node<T>> nodes = new Stack<>();
-        nodes.push(cur);
-        while (!nodes.isEmpty()) {
-            cur = nodes.pop();
-            System.out.print(cur.val + " ");
-            if (cur.right != null) {
-                nodes.push(cur.right);
-            }
-            if (cur.left != null) {
-                nodes.push(cur.left);
-            }
-        }
-        System.out.println();
-    }
-
-    /**
-     * 递归后序遍历：left ---> right ---> root。
-     */
-    public void recursivePostorderTraversal(Node<T> root) {
-        if (root == null) return;
-        recursivePostorderTraversal(root.left);
-        recursivePostorderTraversal(root.right);
-        System.out.println(root.val);
-    }
-
-    /**
-     * 递归中序遍历：left ---> root ---> right。
-     */
-    public void recursiveInorderTraversal(Node<T> root) {
-        if (root == null) return;
-        recursiveInorderTraversal(root.left);
-        System.out.println(root.val);
-        recursiveInorderTraversal(root.right);
-    }
-
-    /**
-     * 递归前序遍历：root ---> left ---> right。
-     */
-    public void recursivePreorderTraversal(Node<T> root) {
-        if (root == null) return;
-        System.out.println(root.val);
-        recursivePreorderTraversal(root.left);
-        recursivePreorderTraversal(root.right);
     }
 }
