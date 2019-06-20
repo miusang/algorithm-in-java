@@ -20,9 +20,9 @@ public class RedBlackTree<T extends Comparable<T>> extends Tree<T> {
      * @param order 被构建序列。
      */
     public void build(T[] order) {
-        for (int i = 0; i < order.length; i++) {
-            if (!insert(order[i])) {
-                System.out.println(order[i] + "已经存在。");
+        for (T item : order) {
+            if (!insert(item)) {
+                System.out.println(item + "已经存在。");
             }
         }
     }

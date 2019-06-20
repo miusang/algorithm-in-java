@@ -28,8 +28,8 @@ public class BinarySearchTree<T extends Comparable<T>> extends Tree<T> {
         if (order.length <= 0) {
             return;
         }
-        for (int i = 0; i < order.length; i++) {
-            this.inser(order[i]);
+        for (T item : order) {
+            this.insert(item);
         }
     }
 
@@ -90,7 +90,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends Tree<T> {
      * @param val 被插入结点的值。
      * @return 若果不存在重复元素，则插入该元素且返回true；否则，返回false。
      */
-    public boolean inser(T val) {
+    public boolean insert(T val) {
         Node<T> cur = this.getRoot();
         if (cur == null) {
             this.setRoot(new Node<>(val));

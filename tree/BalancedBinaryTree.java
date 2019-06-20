@@ -19,9 +19,9 @@ public class BalancedBinaryTree<T extends Comparable<T>> extends Tree<T> {
      * 构建AVL树。
      */
     public void build(T[] order) {
-        for(int i = 0; i < order.length; i++) {
-            if (!this.insert(order[i])) {
-                System.out.println("值为" + order[i] + "的元素已经存在。");
+        for(T item : order) {
+            if (!this.insert(item)) {
+                System.out.println("值为" + item + "的元素已经存在。");
             }
         }
     }
@@ -66,14 +66,14 @@ public class BalancedBinaryTree<T extends Comparable<T>> extends Tree<T> {
     /**
      * 删除元素。
      * @param val 被删除元素的值。
-     * @return 若果存在钙元素，删除并返回ture；否则，返回false。
+     * @return 若果存在钙元素，删除并返回true；否则，返回false。
      */
     public boolean delete(T val) {
         Node<T> delete_node = this.find(val);
         if (delete_node == null) {
             return false; // 树中不存在该元素，返回false。
         }
-        Node<T> parent = null;
+        Node<T> parent;
         if (delete_node.left == null && delete_node.right == null) {
             if (delete_node.parent == null) {
                 this.setRoot(null);
@@ -127,7 +127,7 @@ public class BalancedBinaryTree<T extends Comparable<T>> extends Tree<T> {
      */
     public Node<T> find(T val) {
         Node<T> cur = this.getRoot();
-        int compare_res = 0;
+        int compare_res;
         while (cur != null) {
             compare_res = val.compareTo(cur.val);
             if (compare_res == 0) {
