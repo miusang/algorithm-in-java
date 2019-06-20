@@ -25,7 +25,7 @@ package com.ning.algorithm.datastructure;
  *         > 如果被删除元素位于非叶子节点上，则用其后继覆盖该元素，然后用后继元素更新为被删除元素，此时被删除的
  *           元素位于叶子节点上；
  *         > 如果被删除元素所在节点的键的个数大于等于ceil(m / 2) - 1，则直接删除该元素并结束；
- *         >
+ *         > jiezhe
  */
 public class BTree {
     public static void main(String[] args) {
