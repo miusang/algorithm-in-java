@@ -7,10 +7,10 @@ package cn.ning.algorithm.tree;
  */
 public class TestTree {
     public static void main (String[] args) throws Exception {
-        //testBinaryTree(3);
+        testBinaryTree(3);
         //testBinarySearchTree();
         //testBalancedBinaryTree();
-        testRedBlackTree();
+        //testRedBlackTree();
     }
 
     /**
@@ -57,7 +57,7 @@ public class TestTree {
     /**
      * 测试二叉查找树。
      */
-    static void testBinarySearchTree() throws Exception {
+    static void testBinarySearchTree() {
         Integer[] order = new Integer[] {4, 2, 8, 5, 1, 6, 3, 9, 7, 10};
         BinarySearchTree<Integer> bsTree = new BinarySearchTree<>();
         bsTree.build(order);
@@ -68,9 +68,7 @@ public class TestTree {
             bsTree.inorderTraversal();
             //bsTree.postorderTraversal();
             System.out.println();
-
         }
-
     }
 
     /**
