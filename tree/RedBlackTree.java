@@ -1,6 +1,5 @@
 package cn.ning.algorithm.tree;
 
-import org.omg.CORBA.NO_IMPLEMENT;
 
 /**
  * 红黑树。

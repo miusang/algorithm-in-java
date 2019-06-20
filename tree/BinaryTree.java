@@ -1,8 +1,5 @@
 package cn.ning.algorithm.tree;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
 
 /*
  *                                          二叉树

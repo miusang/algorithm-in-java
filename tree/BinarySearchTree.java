@@ -1,6 +1,5 @@
 package cn.ning.algorithm.tree;
 
-import java.util.HashMap;
 
 /**
  * 二叉查找树。
