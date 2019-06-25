@@ -11,14 +11,7 @@ package cn.ning.algorithm.tree;
  *    (3). 根节点必须至少包含2个节点(特殊情况除外：没有孩子的根节点)；
  *    (4). 所有叶子节点均处于同一层。
  *
- * 2. 操作
- *    (1). 插入：
- *         > 遍历B树并找到可插入节点的适当叶节点；
- *         > 如果叶节点包含少于m-1个键，则按递增顺序插入元素；
- *         > 如果叶节点包含m-1个键，则按照以下步骤进行操作：
- *           a. 按元素的递增顺序插入新元素；
- *           b. 将节点拆分为以中值元素为中心拆分为左右两个节点，并将中值元素推送到其父节点；
- *           c. 如果父节点在推送前还包含m-1个键，则按照相同的步骤将其进行拆分。
+
  *
  *    (2). 删除：
  *         > 寻找被删除的元素，如果找不到，则删除失败并结束；
@@ -38,19 +31,85 @@ public class BTree {
     public static void mian(String[] args) {
     }
 
-    public int M; // B树的阶数。
+    private int M; // B树的阶数。
+    private BNode root; // 根结点。
+
+    public BTree(int m) {
+        M = m;
+    }
+
+    /**
+     * 获取B树的阶数。
+     */
+    public int getOrder() {
+        return M;
+    }
+
+    /**
+     * 获取根结点。
+     */
+    public BNode getRoot() {
+        return root;
+    }
+
+    /**
+     * 设置根结点。
+     */
+    public void setRoot(BNode root) {
+        this.root = root;
+    }
 
     /**
      * 查找。
      */
     public BNode find(int key) {
+        BNode cur = root;
+        while (cur != null) {
+            for (int i = 0; i < cur.getCount(); i++) {
+                int compare_res = cur.getKey(i) - key;
+                if (compare_res == 0) {
+                    return cur;
+                } else if (compare_res > 0) {
+                    cur = cur.getChild(i);
+                    break;
+                }
+            }
+            cur = cur.getChild(cur.getCount() + 1);
+        }
         return null;
     }
 
     /**
+     * 构建B树。
+     */
+    public void build(int[] keys) {
+        for(int key : keys) {
+            insert(key);
+        }
+    }
+
+    /**
      * 插入结点。
+     *  > 遍历B树并找到可插入节点的适当叶节点；
+     *  > 如果叶节点包含少于m-1个键，则按递增顺序插入元素；
+     *  > 如果叶节点包含m-1个键，则按照以下步骤进行操作：
+     *    a. 按元素的递增顺序插入新元素；
+     *    b. 将节点拆分为以中值元素为中心拆分为左右两个节点，并将中值元素推送到其父节点；
+     *    c. 如果父节点在推送前还包含m-1个键，则按照相同的步骤将其进行拆分。
      */
     public boolean insert(int key) {
+        if (root == null) { // 1. 空树情况。
+            root = new BNode(M);
+            root.setCount(1);
+            root.setKey(key, 0);
+            root.setParent(null);
+            return true;
+        }
+        BNode cur = root;
+        while (cur != null) {
+
+        }
+
         return false;
     }
 
