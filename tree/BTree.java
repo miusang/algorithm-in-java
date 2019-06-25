@@ -38,4 +38,40 @@ public class BTree {
     public static void mian(String[] args) {
     }
 
+    public int M; // B树的阶数。
+
+    /**
+     * 查找。
+     */
+    public BNode find(int key) {
+        return null;
+    }
+
+    /**
+     * 插入结点。
+     */
+    public boolean insert(int key) {
+        return false;
+    }
+
+    /**
+     * 删除结点。
+     */
+    public boolean delete() {
+        return false;
+    }
+
+    /**
+     * 查找前驱结点。
+     */
+    public BNode findPredecessor() {
+        return null;
+    }
+
+    /**
+     * 查找后继结点。
+     */
+    public BNode findSuccessor() {
+        return null;
+    }
 }
