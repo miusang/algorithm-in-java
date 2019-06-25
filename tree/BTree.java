@@ -6,7 +6,7 @@ package cn.ning.algorithm.tree;
  * 单个节点中存储大量键，并通过保持树的高度相对较小来存储大键值。
  *
  * 1. B树结构：
- *    (1). 每个节点最多包含m个子节点(m >= 2)；
+ *    (1). 每个节点最多包含m个子节点(考虑到查找效率，m >= 3)；
  *    (2). 除根结点和叶节点外，每个节点至少包含ceil(m / 2)个子节点；
  *    (3). 根节点必须至少包含2个节点(特殊情况除外：没有孩子的根节点)；
  *    (4). 所有叶子节点均处于同一层。
@@ -36,7 +36,6 @@ package cn.ning.algorithm.tree;
  */
 public class BTree {
     public static void mian(String[] args) {
-
     }
 
 }
