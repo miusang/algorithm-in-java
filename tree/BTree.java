@@ -66,15 +66,17 @@ public class BTree {
         BNode cur = root;
         while (cur != null) {
             for (int i = 0; i < cur.getCount(); i++) {
-                int compare_res = cur.getKey(i) - key;
+                int compare_res = key - cur.getKey(i);
                 if (compare_res == 0) {
                     return cur;
-                } else if (compare_res > 0) {
+                } else if (compare_res < 0) {
                     cur = cur.getChild(i);
+                    break;
+                } else if (i == cur.getCount() - 1) {
+                    cur = cur.getChild(cur.getCount() + 1);
                     break;
                 }
             }
-            cur = cur.getChild(cur.getCount() + 1);
         }
         return null;
     }
@@ -101,16 +103,76 @@ public class BTree {
         if (root == null) { // 1. 空树情况。
             root = new BNode(M);
             root.setCount(1);
-            root.setKey(key, 0);
+            root.insertKey(key);
             root.setParent(null);
             return true;
         }
         BNode cur = root;
-        while (cur != null) {
+        BNode parent = null;
+        while (cur != null && !cur.isLeaf()) { // 这一步是找到适合插入的叶结点。
+            for (int i = 0; i < cur.getCount(); i++) {
+                int compare_res = key - cur.getKey(i);
+                if (compare_res == 0) { // 已存在该元素的键，插入失败。
+                    return false;
+                } else if (compare_res < 0) {
+                    parent = cur;
+                    cur = cur.getChild(i);
+                    break;
+                } else if (i ==  cur.getCount() - 1) {
+                    parent = cur;
+                    cur = cur.getChild(cur.getCount() + 1);
+                    break;
+                }
+            }
+        }
+        if (cur == null) {
+            cur = new BNode(M);
+        } else {
+            for (int i = 0; i < cur.getCount(); i++) { // 排除叶结点出现重复元素。
+                if (key == cur.getKey(i)) {
+                    return false;
+                }
+            }
+        }
+        if (cur.getCount() < M - 1) { // 插入结点的键的个数小于m - 1。
+            cur.insertKey(key);
+            cur.setParent(parent);
+            return true;
+        }
+        // 接下来处理插入结点的键的个数等于m - 1的情况。
 
+
+        return true;
+    }
+
+    private void split(int key, BNode cur) {
+
+        int mid_index = (M + 1) / 2 - 1;
+        int mid = cur.getKey(mid_index);
+        BNode parent = null;
+        if (cur.getParent() == null) { // 说明该节点为根节点。
+            root = new BNode(M);
+            parent = root;
+        } else {
+            parent = cur.getParent();
+        }
+        if (key > mid) {
+
+            int j = mid_index + 1;
+            while (j < cur.getCount() && key > cur.getKey(j)) {
+                cur.setKey(cur.getKey(j), j - 1);
+                j++;
+            }
+            cur.setKey(key, j - 1);
+        } else {
+            int j = mid_index - 1;
+            while (j > 0 && key < cur.getKey(j)) {
+                cur.setKey(cur.getKey(j - 1), j);
+                j--;
+            }
+            cur.setKey(key, j);
         }
 
-        return false;
     }
 
     /**

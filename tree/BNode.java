@@ -29,10 +29,33 @@ public class BNode {
     }
 
     /**
-     * 插入键。
+     * 替换键。
      */
     public void setKey(int key, int index) {
         keys[index] = key;
+    }
+
+    /**
+     * 插入键。
+     */
+    public void insertKey(int key) {
+        if (count >= keys.length) { // 一个结点的键的个数不能大于m - 1。
+            return;
+        }
+        for (int i = 0; i < count; i++) {
+            if (key < keys[i]) {
+                int j = i;
+                while (j < count) {
+                    keys[j + 1] = keys[j];
+                    j++;
+                }
+                keys[i] = key;
+                count++;
+                break;
+            }
+        }
+        keys[count] = key;
+        count++;
     }
 
     /**
