@@ -27,22 +27,23 @@ package cn.ning.algorithm.tree;
  *           合并，形成一个新的节点。
  *         > 如果父节点的键的个数小于ceil(m / 2) - 1，则应将在父节点应用上述过程。
  */
-public class BTree {
-    public static void mian(String[] args) {
+public class BTree<K extends Comparable<K>, V> {
+    public static void main(String[] args) {
+
     }
 
-    private int M; // B树的阶数。
-    private BNode root; // 根结点。
+    private int degree; // B树的阶数。
+    private BNode<K, V> root; // 根结点。
 
     public BTree(int m) {
-        M = m;
+        degree = m;
     }
 
     /**
      * 获取B树的阶数。
      */
-    public int getOrder() {
-        return M;
+    public int getDegree() {
+        return degree;
     }
 
     /**
@@ -55,25 +56,25 @@ public class BTree {
     /**
      * 设置根结点。
      */
-    public void setRoot(BNode root) {
+    public void setRoot(BNode<K, V> root) {
         this.root = root;
     }
 
     /**
      * 查找。
      */
-    public BNode find(int key) {
-        BNode cur = root;
+    public BNode find(K key) {
+        BNode<K, V> cur = root;
         while (cur != null) {
             for (int i = 0; i < cur.getCount(); i++) {
-                int compare_res = key - cur.getKey(i);
+                int compare_res = key.compareTo(cur.getKey(i));
                 if (compare_res == 0) {
                     return cur;
                 } else if (compare_res < 0) {
                     cur = cur.getChild(i);
                     break;
                 } else if (i == cur.getCount() - 1) {
-                    cur = cur.getChild(cur.getCount() + 1);
+                    cur = cur.getChild(cur.getCount());
                     break;
                 }
             }
@@ -84,10 +85,7 @@ public class BTree {
     /**
      * 构建B树。
      */
-    public void build(int[] keys) {
-        for(int key : keys) {
-            insert(key);
-        }
+    public void build() {
     }
 
     /**
@@ -99,79 +97,73 @@ public class BTree {
      *    b. 将节点拆分为以中值元素为中心拆分为左右两个节点，并将中值元素推送到其父节点；
      *    c. 如果父节点在推送前还包含m-1个键，则按照相同的步骤将其进行拆分。
      */
-    public boolean insert(int key) {
-        if (root == null) { // 1. 空树情况。
-            root = new BNode(M);
-            root.setCount(1);
-            root.insertKey(key);
-            root.setParent(null);
-            return true;
-        }
-        BNode cur = root;
-        BNode parent = null;
-        while (cur != null && !cur.isLeaf()) { // 这一步是找到适合插入的叶结点。
+    public boolean insert(K key, V val) {
+        BNode<K, V> cur = root;
+        while (cur != null && !cur.isLeaf()) {
             for (int i = 0; i < cur.getCount(); i++) {
-                int compare_res = key - cur.getKey(i);
-                if (compare_res == 0) { // 已存在该元素的键，插入失败。
-                    return false;
+                int compare_res = key.compareTo(cur.getKey(i));
+                if (compare_res == 0) {
+                    return false; // 重复插入。
                 } else if (compare_res < 0) {
-                    parent = cur;
                     cur = cur.getChild(i);
                     break;
-                } else if (i ==  cur.getCount() - 1) {
-                    parent = cur;
-                    cur = cur.getChild(cur.getCount() + 1);
+                } else if (i == cur.getCount() - 1) {
+                    cur = cur.getChild(cur.getCount());
                     break;
                 }
             }
         }
-        if (cur == null) {
-            cur = new BNode(M);
-        } else {
-            for (int i = 0; i < cur.getCount(); i++) { // 排除叶结点出现重复元素。
-                if (key == cur.getKey(i)) {
-                    return false;
-                }
+        if (cur == null) { // 说明是空树。
+            root = new BNode<>();
+            return root.insert(key, val);
+        }
+        if (cur.getCount() < degree - 1) { // 叶结点的键的个数少于m-1个。
+            return cur.insert(key, val);
+        }
+        for (int i = 0; i < cur.getCount(); i++) { // 防止重复插入。
+            if (key.compareTo(cur.getKey(i)) == 0) {
+                return false;
             }
         }
-        if (cur.getCount() < M - 1) { // 插入结点的键的个数小于m - 1。
-            cur.insertKey(key);
-            cur.setParent(parent);
-            return true;
-        }
-        // 接下来处理插入结点的键的个数等于m - 1的情况。
-
-
+        split(cur, key, val); // 叶结点的键的个数等于m-1个。
         return true;
     }
 
-    private void split(int key, BNode cur) {
+    private void split(BNode<K, V> cur, K key, V val) {
+        int index = (cur.getCount() - 1) / 2;
+        if (key.compareTo(cur.getKey(index)) < 0) {
+            K mid = cur.getKey(index);
 
-        int mid_index = (M + 1) / 2 - 1;
-        int mid = cur.getKey(mid_index);
-        BNode parent = null;
-        if (cur.getParent() == null) { // 说明该节点为根节点。
-            root = new BNode(M);
-            parent = root;
-        } else {
-            parent = cur.getParent();
-        }
-        if (key > mid) {
+        } else if (key.compareTo(cur.getKey(index + 1)) < 0) {
 
-            int j = mid_index + 1;
-            while (j < cur.getCount() && key > cur.getKey(j)) {
-                cur.setKey(cur.getKey(j), j - 1);
-                j++;
-            }
-            cur.setKey(key, j - 1);
         } else {
-            int j = mid_index - 1;
-            while (j > 0 && key < cur.getKey(j)) {
-                cur.setKey(cur.getKey(j - 1), j);
-                j--;
-            }
-            cur.setKey(key, j);
+
         }
+//        int mid_index = (M + 1) / 2 - 1;
+//        int mid = cur.getKey(mid_index);
+//        BNode parent = null;
+//        if (cur.getParent() == null) { // 说明该节点为根节点。
+//            root = new BNode(M);
+//            parent = root;
+//        } else {
+//            parent = cur.getParent();
+//        }
+//        if (key > mid) {
+//
+//            int j = mid_index + 1;
+//            while (j < cur.getCount() && key > cur.getKey(j)) {
+//                cur.setKey(cur.getKey(j), j - 1);
+//                j++;
+//            }
+//            cur.setKey(key, j - 1);
+//        } else {
+//            int j = mid_index - 1;
+//            while (j > 0 && key < cur.getKey(j)) {
+//                cur.setKey(cur.getKey(j - 1), j);
+//                j--;
+//            }
+//            cur.setKey(key, j);
+//        }
 
     }
 
