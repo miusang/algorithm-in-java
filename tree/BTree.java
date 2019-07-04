@@ -1,5 +1,7 @@
 package cn.ning.algorithm.tree;
 
+import java.util.ArrayList;
+
 /**
  * B树
  * B树是一种专用的m阶树，可广泛应用于磁盘访问。m阶B树最多可以有m-1个键和m个子树。使用B树的主要原因之一是她能够在
@@ -29,7 +31,16 @@ package cn.ning.algorithm.tree;
  */
 public class BTree<K extends Comparable<K>, V> {
     public static void main(String[] args) {
-
+        ArrayList<String> list = new ArrayList<>();
+        list.add("12");
+        list.add("23");
+        list.add("34");
+        for (String str : list) {
+            if (str.compareTo("23") == 0) {
+                System.out.println(list.remove(str));
+            }
+        }
+        System.out.println(list);
     }
 
     private int degree; // B树的阶数。
@@ -130,41 +141,35 @@ public class BTree<K extends Comparable<K>, V> {
     }
 
     private void split(BNode<K, V> cur, K key, V val) {
+        BNode<K, V> parent = cur.getParent();
+        cur.insert(key, val);
         int index = (cur.getCount() - 1) / 2;
-        if (key.compareTo(cur.getKey(index)) < 0) {
-            K mid = cur.getKey(index);
-
-        } else if (key.compareTo(cur.getKey(index + 1)) < 0) {
-
-        } else {
-
+        key = cur.getKey(index);
+        val = cur.getValue(index);
+        cur.delete(index);
+        if (parent != null && parent.getCount() >= degree - 1) {
+            split(parent, key, val);
+            return;
         }
-//        int mid_index = (M + 1) / 2 - 1;
-//        int mid = cur.getKey(mid_index);
-//        BNode parent = null;
-//        if (cur.getParent() == null) { // 说明该节点为根节点。
-//            root = new BNode(M);
-//            parent = root;
-//        } else {
-//            parent = cur.getParent();
-//        }
-//        if (key > mid) {
-//
-//            int j = mid_index + 1;
-//            while (j < cur.getCount() && key > cur.getKey(j)) {
-//                cur.setKey(cur.getKey(j), j - 1);
-//                j++;
-//            }
-//            cur.setKey(key, j - 1);
-//        } else {
-//            int j = mid_index - 1;
-//            while (j > 0 && key < cur.getKey(j)) {
-//                cur.setKey(cur.getKey(j - 1), j);
-//                j--;
-//            }
-//            cur.setKey(key, j);
-//        }
-
+        BNode<K, V> child2 = new BNode<>();
+        while (cur.getCount() > index) {
+            int last_index = cur.getCount() - 1;
+            child2.insert(cur.getKey(last_index), cur.getValue(last_index));
+            cur.delete(last_index);
+        }
+        if (parent == null) {
+            root = new BNode<>();
+            root.setLeaf(false);
+            root.insertChild(cur);
+            root.insertChild(child2);
+            cur.setParent(root);
+            child2.setParent(root);
+            return;
+        }
+        parent.setLeaf(false);
+        parent.insert(key, val);
+        parent.insertChild(child2);
+        child2.setParent(parent);
     }
 
     /**

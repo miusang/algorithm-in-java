@@ -6,7 +6,7 @@ public class BNode<K extends Comparable<K>, V> {
 
     private ArrayList<Entry> entries; // 结点包含的键值对。
     private ArrayList<BNode<K, V>> childs;
-    private BNode parent; // 父结点。
+    private BNode<K, V> parent; // 父结点。
     private boolean leaf; // 是否为叶子结点。
 
 
@@ -40,7 +40,7 @@ public class BNode<K extends Comparable<K>, V> {
     }
 
     /**
-     * 插入键值对。
+     * 顺序插入键值对。
      */
     public boolean insert(K key, V val) {
         for (int i = 0; i < entries.size(); i++) {
@@ -58,6 +58,25 @@ public class BNode<K extends Comparable<K>, V> {
     }
 
     /**
+     * 删除键值对。
+     */
+    public boolean delete(K key) {
+        for (Entry entry : entries) {
+            if (key.compareTo(entry.key) == 0) {
+                return entries.remove(entry);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 删除键值对。
+     */
+    public boolean delete(int index) {
+        return entries.remove(index) != null;
+    }
+
+    /**
      * 获取结点键的个数。
      */
     public int getCount() {
@@ -72,10 +91,31 @@ public class BNode<K extends Comparable<K>, V> {
     }
 
     /**
-     * 设置子结点。
+     * 顺序插入子结点。
      */
-    public void insertChild(BNode<K, V> node, int index) {
-        childs.add(index, node);
+    public void insertChild(BNode<K, V> node) {
+        K key = node.getKey(0);
+        for (int i = 0; i < entries.size(); i++) {
+            if (key.compareTo(entries.get(i).key) < 0) {
+                childs.add(i, node);
+                return;
+            }
+        }
+        childs.add(node);
+    }
+
+    /**
+     * 删除子结点。
+     */
+    public boolean deleteChild(BNode<K, V> node) {
+        return childs.remove(node);
+    }
+
+    /**
+     * 删除子结点。
+     */
+    public BNode<K, V> deleteChild(int index) {
+        return childs.remove(index);
     }
 
     /**
